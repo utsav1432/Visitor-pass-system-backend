@@ -11,9 +11,6 @@ const scanQRCode = async (req, res) => {
     try{
         let pass = null;
 
-        const appointment = pass.appointment;
-        const visitor = pass.visitor;
-
         if(appointmentId) {
             pass = await Pass.findOne({ appointment: appointmentId }).populate('visitor appointment');;
         }else if(passId) {
@@ -26,6 +23,9 @@ const scanQRCode = async (req, res) => {
             });
         }
 
+        const appointment = pass.appointment;
+        const visitor = pass.visitor;
+
         if(appointment.status !== 'approved') {
             return res.status(400).json({
                 message: `Pass not approved (status: ${appointment.status})`
@@ -35,6 +35,13 @@ const scanQRCode = async (req, res) => {
         if(new Date() > pass.validTill) {
             return res.status(400).json({
                 message: 'Pass has expired' 
+            });
+        }
+
+        const alreadyCheckedOut = await CheckInOut.findOne({ pass: pass._id, status: 'checked-out' });
+        if (alreadyCheckedOut) {
+            return res.status(400).json({ 
+                message: 'Visitor already checked out' 
             });
         }
 
@@ -61,15 +68,9 @@ const scanQRCode = async (req, res) => {
 
             return res.status(200).json({
                 message: 'Visitor checked in successfully',
-                checkIn
+                checkInOut
             });
         } else {
-            if(checkInOut.status === 'checked-out') {
-                return res.status(400).json({
-                    message: 'Visitor already checked out'
-                });
-            }
-
             checkInOut.checkOutTime = new Date();
             checkInOut.status = 'checked-out';
             await checkInOut.save();

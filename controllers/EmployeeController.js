@@ -29,8 +29,8 @@ const approveAppointment = async (req, res) => {
         await appointment.save();
 
         const qrData = JSON.stringify({
-            appointmentId: appointment._id,
-            visitorId: appointment.visitor._id
+            appointmentId: appointment._id.toString(),
+            visitorId: appointment.visitor._id.toString()
         });
 
         const qrCodeImage = await QRCode.toDataURL(qrData);

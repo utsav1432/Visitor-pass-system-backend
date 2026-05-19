@@ -54,4 +54,6 @@ const CheckInOutSchema = new Schema({
     }
 }, { timestamps: true });
 
+CheckInOutSchema.index({ pass: 1, status: 1 }, { unique: true, partialFilterExpression: { status: 'checked-in' } });
+
 module.exports = mongoose.model('CheckInOut', CheckInOutSchema);
