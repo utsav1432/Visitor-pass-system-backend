@@ -10,6 +10,8 @@ const generatePassNumber = () => {
 
 const approveAppointment = async (req, res) => {
     const { appointmentId } = req.params;
+
+    console.log('Received appointmentId:', req.params.appointmentId);
     try {
         const appointment = await Appointment.findById(appointmentId).populate('visitor');
 
@@ -71,6 +73,8 @@ const approveAppointment = async (req, res) => {
 
 const rejectAppointment = async (req, res) => {
     const { appointmentId } = req.params;
+
+    console.log('Received appointmentId:', req.params.appointmentId);
 
     try {
         const appointment = await Appointment.findById(appointmentId);
