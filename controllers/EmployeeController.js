@@ -11,7 +11,7 @@ const generatePassNumber = () => {
 const approveAppointment = async (req, res) => {
     const { appointmentId } = req.params;
 
-    console.log('Received appointmentId:', req.params.appointmentId);
+    console.log('Received appointmentId:', appointmentId);
     try {
         const appointment = await Appointment.findById(appointmentId).populate('visitor');
 
@@ -65,6 +65,7 @@ const approveAppointment = async (req, res) => {
             pass
         })
     } catch (error) {
+        console.error(error);
         res.status(500).json({ 
             error: error.message 
         });
@@ -74,7 +75,7 @@ const approveAppointment = async (req, res) => {
 const rejectAppointment = async (req, res) => {
     const { appointmentId } = req.params;
 
-    console.log('Received appointmentId:', req.params.appointmentId);
+    console.log('Received appointmentId:', appointmentId);
 
     try {
         const appointment = await Appointment.findById(appointmentId);
@@ -93,6 +94,7 @@ const rejectAppointment = async (req, res) => {
             appointment
         });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ 
             error: error.message 
         });
