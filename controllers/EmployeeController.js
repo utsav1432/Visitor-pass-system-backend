@@ -106,28 +106,4 @@ const getAllAppointments = async (req, res) => {
     }
 };
 
-const deleteAppointment = async (req, res) => {
-    const { appointmentId } = req.params;
-
-    try {
-        const appointment = await Appointment.findById(appointmentId);
-        if (!appointment){
-            return res.status(404).json({
-                message: "Appointment not found"
-            });
-        }
-
-        await Appointment.findByIdAndDelete(appointmentId);
-
-        res.status(200).json({
-            message: "Appointment deleted successfully"
-        });
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).json({
-            error: error.message
-        });
-    }
-};
-
-module.exports = { approveAppointment, rejectAppointment, getAllAppointments, deleteAppointment };
+module.exports = { approveAppointment, rejectAppointment, getAllAppointments };

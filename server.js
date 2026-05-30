@@ -14,7 +14,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin: ['https://visitor-pass-system.netlify.app', 'http://localhost:5173'],
+    origin: ['https://visitor-pass-system.netlify.app'],
     credentials: true
 }));
 
