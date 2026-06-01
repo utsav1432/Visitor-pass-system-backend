@@ -2,7 +2,6 @@ const Appointment = require('../models/Appointment');
 const Visitor = require('../models/Visitor');
 const Pass = require('../models/Pass');
 const QRCode = require("qrcode");
-const { sendEmail } = require('../modules/SendEmail');
 
 const generatePassNumber = () => {
   return `PASS-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
@@ -70,14 +69,6 @@ const approveAppointment = async (req, res) => {
             appointment,
             pass
         });
-
-        if (appointment.visitor.email) {
-            await sendEmail(
-                appointment.visitor.email,
-                'Your visit is approved',
-                `Your appointment for ${appointment.date.toDateString()} at ${appointment.time} has been approved. Your pass number is ${pass.passNumber}. Please Download your QR Pass from website.`,
-            );
-        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ 
