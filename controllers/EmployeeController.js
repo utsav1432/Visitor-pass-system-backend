@@ -5,14 +5,13 @@ const QRCode = require("qrcode");
 const { sendEmail } = require('../modules/SendEmail');
 
 const generatePassNumber = () => {
-  return "PASS-" + Date.now() + "-" + Math.floor(Math.random() * 10000);
+  return `PASS-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
 };
 
 const approveAppointment = async (req, res) => {
-    const { appointmentId } = req.params;
-
-    console.log('Received appointmentId:', appointmentId);
     try {
+        const { appointmentId } = req.params;
+
         const appointment = await Appointment.findById(appointmentId).populate('visitor');
 
         if(!appointment){
@@ -21,14 +20,27 @@ const approveAppointment = async (req, res) => {
             });
         }
 
-        if (appointment.status !== 'pending'){
+        if (appointment.status === "approved") {
             return res.status(400).json({
-                message: `Appointment already ${appointment.status}`
-            })
+                message: "Appointment already approved",
+            });
+        }
+    
+        if (appointment.status === "rejected") {
+            return res.status(400).json({
+                message: "Appointment already rejected",
+            });
         }
 
-        appointment.status = "approved";
-        await appointment.save();
+        const existingPass = await Pass.findOne({
+            appointment: appointment._id,
+        });
+
+        if (existingPass) {
+            return res.status(400).json({
+                message: "Pass already generated",
+            });
+        }
 
         const qrData = JSON.stringify({
             appointmentId: appointment._id.toString(),
@@ -37,7 +49,9 @@ const approveAppointment = async (req, res) => {
 
         const qrCodeImage = await QRCode.toDataURL(qrData);
 
+        appointment.status = "approved";
         appointment.qrCode = qrCodeImage;
+
         await appointment.save();
 
         const valid = new Date();
@@ -73,11 +87,8 @@ const approveAppointment = async (req, res) => {
 };
 
 const rejectAppointment = async (req, res) => {
-    const { appointmentId } = req.params;
-
-    console.log('Received appointmentId:', appointmentId);
-
     try {
+        const { appointmentId } = req.params;
         const appointment = await Appointment.findById(appointmentId);
 
         if(!appointment){
