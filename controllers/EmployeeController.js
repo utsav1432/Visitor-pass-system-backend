@@ -65,6 +65,12 @@ const approveAppointment = async (req, res) => {
             qrCode: qrCodeImage
         });
 
+        res.status(200).json({
+            message: "Appointment approved, QR code and pass generated",
+            appointment,
+            pass
+        });
+
         if (appointment.visitor.email) {
             await sendEmail(
                 appointment.visitor.email,
@@ -72,12 +78,6 @@ const approveAppointment = async (req, res) => {
                 `Your appointment for ${appointment.date.toDateString()} at ${appointment.time} has been approved. Your pass number is ${pass.passNumber}. Please Download your QR Pass from website.`,
             );
         }
-
-        res.status(200).json({
-            message: "Appointment approved, QR code and pass generated",
-            appointment,
-            pass
-        })
     } catch (error) {
         console.error(error);
         res.status(500).json({ 
